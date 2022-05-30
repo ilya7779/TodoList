@@ -21,19 +21,27 @@ function App() {
   }
 
   function addTask(title: string) {
-    let task = { id: v1(), title: title, isDone: false };
+    let task = {id: v1(), title: title, isDone: false};
     let newTasks = [task, ...tasks];
     setTasks(newTasks);
+  }
+
+  function changeStatus(id: string, isDone: boolean) {
+    let task = tasks.find(t => t.id === id);
+    if (task) {
+      task.isDone = isDone;
+      setTasks([ ...tasks ]);
+    }
   }
 
   let [filter, setFilter] = useState<FilterValuesType>("all");
 
   let tasksForTodolist = tasks;
   if (filter === "active") {
-    tasksForTodolist = tasks.filter( t => t.isDone === false);
+    tasksForTodolist = tasks.filter(t => t.isDone === false);
   }
   if (filter === "completed") {
-    tasksForTodolist = tasks.filter( t => t.isDone === true);
+    tasksForTodolist = tasks.filter(t => t.isDone === true);
   }
 
   function changeFilter(value: FilterValuesType) {
@@ -47,6 +55,8 @@ function App() {
                 removeTask={removeTask}
                 addTask={addTask}
                 changeFilter={changeFilter}
+                changeTaskStatus={changeStatus}
+                filter={filter}
       />
     </div>
   );
