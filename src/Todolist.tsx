@@ -64,7 +64,7 @@ export const Todolist = React.memo(function (props: PropsType) {
 
 
   return <div>
-    <h3><EditableSpan title={props.title} onChange={changeTodolistTitle}/>
+    <h3><EditableSpan value={props.title} onChange={changeTodolistTitle}/>
       <IconButton onClick={removeTodolist}>
         <Delete/>
       </IconButton>
