@@ -1,8 +1,8 @@
 import React, {useReducer, useState} from 'react';
 import './App.css';
-import {Todolist} from './Todolist';
+import {Todolist} from '../Todolist';
 import {v1} from 'uuid';
-import {AddItemForm} from './AddItemForm';
+import {AddItemForm} from '../components/AddItemForm/AddItemForm';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -15,9 +15,9 @@ import {
     changeTodolistTitleAC, FilterValuesType,
     removeTodolistAC,
     todolistsReducer
-} from './state/todolists-reducer'
-import {addTaskAC, removeTaskAC, tasksReducer, updateTaskAC} from './state/tasks-reducer';
-import {TaskPriorities, TaskStatuses, TaskType} from './api/todolists-api'
+} from '../state/todolists-reducer'
+import {addTaskAC, removeTaskAC, tasksReducer, updateTaskAC} from '../state/tasks-reducer';
+import {TaskPriorities, TaskStatuses, TaskType} from '../api/todolists-api'
 
 export type TasksStateType = {
     [key: string]: Array<TaskType>
@@ -29,9 +29,9 @@ function AppWithReducers() {
     let todolistId2 = v1();
 
     let [todolists, dispatchToTodolists] = useReducer(todolistsReducer, [
-        {id: todolistId1, title: "What to learn", filter: "all",  addedDate: '',
+        {id: todolistId1, title: "What to learn", filter: "all", entityStatus: 'idle', addedDate: '',
             order: 0},
-        {id: todolistId2, title: "What to buy", filter: "all",  addedDate: '',
+        {id: todolistId2, title: "What to buy", filter: "all", entityStatus: 'idle', addedDate: '',
             order: 0}
     ])
 

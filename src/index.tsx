@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import AppWithRedux from "./AppWithRedux";
+import AppWithRedux from "./app/AppWithRedux";
 import {Provider} from "react-redux";
-import {store} from "./state/store";
-import AppWithReducers from "./AppWithReducers";
+import {store} from "./app/store";
+import AppWithReducers from "./app/AppWithReducers";
 
 const AppWithReducersComponent = AppWithReducers;
 

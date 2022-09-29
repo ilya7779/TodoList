@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect} from 'react';
 import './App.css';
-import {Todolist} from './Todolist';
+import {Todolist} from '../Todolist';
 import {v1} from "uuid";
-import {AddItemForm} from "./AddItemForm";
+import {AddItemForm} from "../components/AddItemForm/AddItemForm";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import {Container, Grid, Paper} from "@mui/material";
+import {Container, Grid, LinearProgress, Paper} from "@mui/material";
 import {
   addTodolistTC,
   changeTodolistFilterAC,
@@ -19,18 +19,23 @@ import {
   FilterValuesType,
   removeTodolistTC,
   TodolistDomainType,
-} from "./state/todolists-reducer";
-import {addTaskTC, removeTaskTC, updateTaskTC} from "./state/tasks-reducer";
+} from "../state/todolists-reducer";
+import {addTaskTC, removeTaskTC, updateTaskTC} from "../state/tasks-reducer";
 import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, AppRootStateType} from "./state/store";
-import {TaskStatuses, TaskType} from "./api/todolists-api";
+import {AppDispatch, AppRootStateType} from "./store";
+import {TaskStatuses, TaskType} from "../api/todolists-api";
+import {ErrorSnackbar} from "../components/ErrorSnackbar/ErrorSnackbar";
+import {RequestStatusType} from "./app-reducer";
 
 export type TasksStateType = {
   [key: string]: Array<TaskType>
 }
 
+type PropsType = {
+  demo?: boolean
+}
 
-function AppWithRedux() {
+function AppWithRedux({demo = false}: PropsType) {
   let todolistId1 = v1();
   let todolistId2 = v1();
 
@@ -82,8 +87,10 @@ function AppWithRedux() {
     dispatch(thunk);
   }, [dispatch]);
 
+  const status = useSelector<AppRootStateType, RequestStatusType>( (state) => state.app.status)
   return (
     <div className="App">
+      <ErrorSnackbar />
       <Box sx={{flexGrow: 1}}>
         <AppBar position="static">
           <Toolbar>
@@ -101,6 +108,7 @@ function AppWithRedux() {
             </Typography>
             <Button color="inherit">Login</Button>
           </Toolbar>
+          { status === 'loading' && <LinearProgress /> }
         </AppBar>
       </Box>
       <Container fixed>
@@ -128,6 +136,7 @@ function AppWithRedux() {
                     removeTodolist={removeTodolist}
                     changeTaskTitle={changeTaskTitle}
                     changeTodolistTitle={changeTodolistTitle}
+                    demo = {demo}
                   />
                 </Paper>
               </Grid>

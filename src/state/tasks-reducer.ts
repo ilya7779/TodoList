@@ -1,8 +1,9 @@
-import {TasksStateType} from "../AppWithRedux";
+import {TasksStateType} from "../app/AppWithRedux";
 import {AddTodolistActionType, RemoveTodolistActionType, SetTodolistsActionType} from "./todolists-reducer";
 import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from "../api/todolists-api";
-import {AppActionsType, AppRootStateType, AppThunk} from "./store";
+import {AppActionsType, AppRootStateType, AppThunk} from "../app/store";
 import {Dispatch} from "redux";
+import {setErrorAC, SetErrorActionType, setStatusAC} from "../app/app-reducer";
 
 export type RemoveTaskActionType = {
   type: 'REMOVE-TASK',
@@ -128,11 +129,12 @@ export const setTasksAC = (tasks: Array<TaskType>, todolistId: string): SetTasks
 
 export const fetchTasksTC = (todolistId: string): AppThunk => {
   return (dispatch: Dispatch) => {
+    dispatch(setStatusAC('loading'))
     todolistsAPI.getTasks(todolistId)
       .then((res) => {
         const tasks = res.data.items;
-        const action = setTasksAC(tasks, todolistId);
-        dispatch(action);
+        dispatch(setTasksAC(tasks, todolistId))
+        dispatch(setStatusAC('succeeded'))
       })
   }
 }
@@ -149,11 +151,26 @@ export const removeTaskTC = (taskId: string, todolistId: string) => {
 
 export const addTaskTC = (title: string, todolistId: string) => {
   return (dispatch: Dispatch) => {
+    dispatch(setStatusAC('loading'))
     todolistsAPI.createTask(todolistId, title)
       .then(res => {
-        const task = res.data.data.item
-        const action = addTaskAC(task)
-        dispatch(action)
+        if (res.data.resultCode === 0) {
+          const task = res.data.data.item
+          const action = addTaskAC(task)
+          dispatch(action)
+          dispatch(setStatusAC('succeeded'))
+
+        } else {
+          if (res.data.messages.length) {
+            dispatch(setErrorAC(res.data.messages[0]));
+          } else {
+            dispatch(setErrorAC('Some error occurred'));
+          }
+          dispatch(setStatusAC('failed'))
+        }
+      })
+      .catch((error) => {
+        debugger
       })
   }
 }
@@ -172,7 +189,7 @@ export const updateTaskTC = (taskId: string, domainModel: UpdateDomainTaskModelT
 
     const state = getstate();
     const task = state.tasks[todolistId].find(t => t.id === taskId);
-    if(!task) {
+    if (!task) {
       //throw new Error("task not found in the state");
       console.warn("task not found in the state");
       return;
